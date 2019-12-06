@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
       std::cout << "Running Twiddle\n";
       pid.Init(0.0, 0.0, 0.0, true);
   } else {
-  pid.Init(0.09, 0.00144, 1.40625);
+  pid.Init(0.0625, 0, 0);
   }
 #endif
 

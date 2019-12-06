@@ -30,20 +30,29 @@ string hasData(string s) {
   return "";
 }
 
-int main() {
+int main(int argc, char *argv[]) {
   uWS::Hub h;
 
   PID pid;
+  bool run_withtwiddle = false;
+  if (argc > 1) {
+      run_withtwiddle = true;
+  }
   /**
    * TODO: Initialize the pid variable.
    */
 #ifndef RUN_TWIDDLE
   pid.Init(0.2, 0.004, 3.0);
 #else
-  pid.Init(0,0,0);
+  if (run_withtwiddle) {
+      std::cout << "Running Twiddle\n";
+      pid.Init(0.0, 0.0, 0.0, true);
+  } else {
+  pid.Init(0.2, 0.004, 3.0);
+  }
 #endif
 
-  h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
+  h.onMessage([&pid, &run_withtwiddle](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -72,13 +81,21 @@ int main() {
 #ifndef RUN_TWIDDLE
           pid.UpdateError(cte);
 #else
+          if (run_withtwiddle) {
           bool status = pid.UpdateTwiddleError(cte);
-          if (status) {
+          if (status) {          std::cout << "CTE: " << cte << " Steering Value: " << steer_value 
+                    << "speed: " << speed << std::endl;
+
+
+              exit(0);
               pid.UpdateError(cte);
           } 
+          } else {
+              pid.UpdateError(cte);
+          }
 
 #endif
-          steer_value += pid.TotalError();
+          steer_value -= pid.TotalError();
           // DEBUG
           std::cout << "CTE: " << cte << " Steering Value: " << steer_value 
                     << "speed: " << speed << std::endl;

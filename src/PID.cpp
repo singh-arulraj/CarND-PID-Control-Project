@@ -57,9 +57,11 @@ bool PID::UpdateTwiddleError(double cte) {
     double sum = dKp + dKi + dKd;
     if (sum < 0.001) {
         std::cout << "Kp = " << Kp << ", Ki = " << Ki << ", Kd = " << Kd << "\n";
+        std::cout << "DKp = "<< dKp << ", dKi = "<< dKi << ", dKd = " << dKd << "\n";
         return true;
     }
     
+    std::cout << "Kp = " << Kp << ", Ki = " << Ki << ", Kd = " << Kd << "\n";
     if  (cte < this->best_error) {
         this->best_error = cte;
         dKp *= 1.1;

@@ -42,13 +42,13 @@ int main(int argc, char *argv[]) {
    * TODO: Initialize the pid variable.
    */
 #ifndef RUN_TWIDDLE
-  pid.Init(0.2, 0.004, 3.0);
+  pid.Init(0.09, 0.00144, 1.40625);
 #else
   if (run_withtwiddle) {
       std::cout << "Running Twiddle\n";
       pid.Init(0.0, 0.0, 0.0, true);
   } else {
-  pid.Init(0.2, 0.004, 3.0);
+  pid.Init(0.09, 0.00144, 1.40625);
   }
 #endif
 
@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
           }
 
 #endif
-          steer_value -= pid.TotalError();
+          steer_value = pid.TotalError();
           // DEBUG
           std::cout << "CTE: " << cte << " Steering Value: " << steer_value 
                     << "speed: " << speed << std::endl;

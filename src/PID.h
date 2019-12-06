@@ -24,7 +24,9 @@ class PID {
    * @param cte The current cross track error
    */
   void UpdateError(double cte);
+  
 
+  bool UpdateTwiddleError(double cte);
   /**
    * Calculate the total PID error.
    * @output The total PID error
@@ -32,19 +34,26 @@ class PID {
   double TotalError();
 
  private:
+  void UpdateParam();
   /**
    * PID Errors
    */
   double p_error;
   double i_error;
   double d_error;
-
+  double best_error;
+  
   /**
    * PID Coefficients
    */ 
   double Kp;
   double Ki;
   double Kd;
+  double dKp;
+  double dKi;
+  double dKd;
+
+  bool second_run;
 };
 
 #endif  // PID_H

@@ -8,7 +8,7 @@ PID::PID() {}
 
 PID::~PID() {}
 using namespace std;
-void PID::Init(double Kp_, double Ki_, double Kd_, bool run_withtwiddle) {
+void PID::Init(double Kp_, double Ki_, double Kd_) {
   /**
    * TODO: Initialize PID coefficients (and errors, if needed)
    */
@@ -17,16 +17,7 @@ void PID::Init(double Kp_, double Ki_, double Kd_, bool run_withtwiddle) {
     Kd = Kd_;
     i_error = 0;
     p_error = 0.0;
-    best_error = 99999.0;
-    dKp = 1;
-    dKi = 1;
-    dKd = 1;
-    second_run = false;
-#ifdef RUN_TWIDDLE
-    if (run_withtwiddle) {
-    UpdateParam();
-    }
-#endif
+    d_error = 0.0;
 }
 
 void PID::UpdateError(double cte) {
@@ -45,47 +36,3 @@ double PID::TotalError() {
   return (-Kp * p_error - Kd * d_error - Ki * i_error);  // TODO: Add your total error calc here!
 }
 
-void PID::UpdateParam() {
-    Kp += dKp;
-    Kd += dKd;
-    Ki += dKi;
-}
-
-bool PID::UpdateTwiddleError(double cte) {
-    this->UpdateError(cte);
-    double current_error = this->TotalError();
-    double sum = dKp + dKi + dKd;
-    if (sum < 0.001) {
-        std::cout << "Kp = " << Kp << ", Ki = " << Ki << ", Kd = " << Kd << "\n";
-        std::cout << "DKp = "<< dKp << ", dKi = "<< dKi << ", dKd = " << dKd << "\n";
-        return true;
-    }
-    
-    std::cout << "Kp = " << Kp << ", Ki = " << Ki << ", Kd = " << Kd << "\n";
-    if  (cte < this->best_error) {
-        this->best_error = cte;
-        dKp *= 1.1;
-        dKi *= 1.1;
-        dKd *= 1.1;
-        second_run = false;
-        std::cout << "Updating by 1.1 \n";
-        this->UpdateParam();
-    } else {
-        if (!second_run) {
-        Kp -= dKp * 2;
-        Ki -= dKi * 2;
-        Kd -= dKd * 2;
-        second_run = true;
-        std::cout << "Updating by 2\n";
-        } else {
-            this->UpdateParam();
-            dKp *= 0.9;
-            dKd *= 0.9;
-            dKi *= 0.9;
-            second_run = false;
-            std::cout << "Updating by 0.9\n";
-        }
-    }
-    return false;
-
-}

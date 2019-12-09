@@ -51,7 +51,8 @@ int main(int argc, char *argv[]) {
     }
     pid.Init(std::stof(argv[1]), std::stof(argv[2]), std::stof(argv[3]));
 #else
-    pid.Init(0.09, 0.00144, 1.40625);
+   
+    pid.Init(2.1, 0.007, 157.5);
 #endif
 
     h.onMessage([&pid,  &count, &err, &testRun](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 

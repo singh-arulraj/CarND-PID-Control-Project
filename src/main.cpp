@@ -37,11 +37,12 @@ int main(int argc, char *argv[]) {
     /**
      * TODO: Initialize the pid variable.
      */
-#ifdef RUN_TWIDDLE
     double err = 0.0;
     int count = 0;
     bool testRun = false;
-    if (argc < 4) {
+ 
+#ifdef RUN_TWIDDLE
+   if (argc < 4) {
         std::cout << "Please enter valid parameters.\n";
         //exit(0);
     } 

@@ -14,7 +14,7 @@ constexpr double pi() { return M_PI; }
 double deg2rad(double x) { return x * pi() / 180; }
 double rad2deg(double x) { return x * 180 / pi(); }
 
-#define TWIDDLE_RUN_COUNT 100
+#define TWIDDLE_RUN_COUNT 200
 // Checks if the SocketIO event has JSON data.
 // If there is data the JSON object in string format will be returned,
 // else the empty string "" will be returned.
@@ -40,20 +40,26 @@ int main(int argc, char *argv[]) {
     double err = 0.0;
     int count = 0;
     bool testRun = false;
- 
-#ifdef RUN_TWIDDLE
-   if (argc < 4) {
-        std::cout << "Please enter valid parameters.\n";
-        //exit(0);
-    } 
 
-    if (argc == 5) {
+#ifdef RUN_TWIDDLE
+    if (argc == 1) {
+        pid.Init(2.1, 0.007, 157.5);
         testRun = true;
+    } else {
+        if (argc < 4) {
+            std::cout << "Please enter valid parameters.\n";
+            exit(0);
+        } 
+
+        if (argc == 4) {
+            testRun = true;
+        }
+        pid.Init(std::stof(argv[1]), std::stof(argv[2]), std::stof(argv[3]));
     }
-    pid.Init(std::stof(argv[1]), std::stof(argv[2]), std::stof(argv[3]));
 #else
-   
+
     pid.Init(2.1, 0.007, 157.5);
+    //pid.Init(0.2, 0.0003, 3.0);
 #endif
 
     h.onMessage([&pid,  &count, &err, &testRun](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
@@ -84,15 +90,15 @@ int main(int argc, char *argv[]) {
              */
 #ifdef RUN_TWIDDLE
             if (!testRun) {
-            count++;
-            if (count > TWIDDLE_RUN_COUNT) {
-                err += (cte * cte);
-            }
-            if(count == (2 * TWIDDLE_RUN_COUNT)) {
-                err = err / TWIDDLE_RUN_COUNT;
-                std::cout << "The Error in this Run = " << err << "\n";
-                exit(0);
-            }
+                count++;
+                if (count > TWIDDLE_RUN_COUNT) {
+                    err += (cte * cte);
+                }
+                if(count == (2 * TWIDDLE_RUN_COUNT)) {
+                    err = err / TWIDDLE_RUN_COUNT;
+                    std::cout << "The Error in this Run = " << err << "\n";
+                    exit(0);
+                }
             }
 #endif
             pid.UpdateError(cte);
